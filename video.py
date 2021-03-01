@@ -60,7 +60,7 @@ def main():
         if event == 'Pause':
             flag = 0
             while flag == 0:
-                event, values = window.read(timeout=10)
+                event, values = window.read(timeout=20)
                 if int(values['-slider-']) != cur_frame - 1:
                     ret, frame = vidFile.read()
                     cur_frame = int(values['-slider-'])
@@ -70,27 +70,19 @@ def main():
                     imgbytes = cv.imencode('.png', frame)[1].tobytes()  # ditto
                     image_elem.update(data=imgbytes)
 
-                if event == 'Polay':
-                    flag = 1
-
-                    print("calling play after slider change")
-
-                    ret, frame = vidFile.read()
+                if event == 'Play':
                     cur_frame = int(values['-slider-'])
                     vidFile.set(cv.CAP_PROP_POS_FRAMES, cur_frame)
                     slider_elem.update(cur_frame)
                     cur_frame += 1
                     imgbytes = cv.imencode('.png', frame)[1].tobytes()  # ditto
                     image_elem.update(data=imgbytes)
-                    # ret, frame = vidFile.read()
+
+                    print("no slider change")
+                    # #ret, frame = vidFile.read()
                     # imgbytes = cv.imencode('.png', frame)[1].tobytes()
                     # image_elem.update(data=imgbytes)
-                if event == 'Play':
-                    print("no slider change")
                     flag = 1
-                    ret, frame = vidFile.read()
-                    imgbytes = cv.imencode('.png', frame)[1].tobytes()
-                    image_elem.update(data=imgbytes)
 
         imgbytes = cv.imencode('.png', frame)[1].tobytes()  # ditto
         image_elem.update(data=imgbytes)
