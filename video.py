@@ -57,53 +57,27 @@ def main():
         slider_elem.update(cur_frame)
         cur_frame += 1
 
-        if event == 'Pause':
-            flag = 0
-            while flag == 0:
-                event, values = window.read(timeout=20)
-                if int(values['-slider-']) != cur_frame - 1:
-                    ret, frame = vidFile.read()
-                    cur_frame = int(values['-slider-'])
-                    vidFile.set(cv.CAP_PROP_POS_FRAMES, cur_frame)
-                    slider_elem.update(cur_frame)
-                    cur_frame += 1
-                    imgbytes = cv.imencode('.png', frame)[1].tobytes()  # ditto
-                    image_elem.update(data=imgbytes)
-
-                if event == 'Play':
-                    cur_frame = int(values['-slider-'])
-                    vidFile.set(cv.CAP_PROP_POS_FRAMES, cur_frame)
-                    slider_elem.update(cur_frame)
-                    cur_frame += 1
-                    imgbytes = cv.imencode('.png', frame)[1].tobytes()  # ditto
-                    image_elem.update(data=imgbytes)
-
-                    print("no slider change")
-                    # #ret, frame = vidFile.read()
-                    # imgbytes = cv.imencode('.png', frame)[1].tobytes()
-                    # image_elem.update(data=imgbytes)
-                    flag = 1
-
         imgbytes = cv.imencode('.png', frame)[1].tobytes()  # ditto
         image_elem.update(data=imgbytes)
 
-        #############
-        #    | |    #
-        #    | |    #
-        #    |_|    #
-        #  __   __  #
-        #  \ \ / /  #
-        #   \ V /   #
-        #    \_/    #
+        if event == 'Pause':
+            while event != 'Play':
+                event, values = window.read(timeout=20)
 
+                if int(values['-slider-']) != cur_frame - 1:
+                    ret, frame = vidFile.read()
 
-"""         #############
-        # This was another way updates were being done, but seems slower than the above
-        img = Image.fromarray(frame)    # create PIL image from frame
-        bio = io.BytesIO()              # a binary memory resident stream
-        img.save(bio, format= 'PNG')    # save image as png to it
-        imgbytes = bio.getvalue()       # this can be used by OpenCV hopefully
-        image_elem.update(data=imgbytes)
-"""
+                    if not ret:  # if out of data stop looping
+                        break
+
+                    cur_frame = int(values['-slider-'])
+                    vidFile.set(cv.CAP_PROP_POS_FRAMES, cur_frame)
+
+                    slider_elem.update(cur_frame)
+                    cur_frame += 1
+
+                    imgbytes = cv.imencode('.png', frame)[1].tobytes()  # ditto
+                    image_elem.update(data=imgbytes)
+
 
 main()
