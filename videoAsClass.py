@@ -16,4 +16,5 @@ layout = video_player.video_layout()
 video_player.video_window()
 
 # Final function to call the event loop.
+#To Do: pass event and value from the main app to this app.
 video_player.show_video()
