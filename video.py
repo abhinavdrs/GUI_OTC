@@ -3,6 +3,7 @@ import PySimpleGUI as sg
 from PIL import Image
 import cv2 as cv
 import io
+from time import perf_counter
 
 """
 Demo program to open and play a file using OpenCV
@@ -47,6 +48,7 @@ def main():
         event, values = window.read(timeout=20)
         if event in ('Exit', None):
             break
+        t_0 = perf_counter()
         ret, frame = vidFile.read()
         if not ret:  # if out of data stop looping
             break
@@ -59,6 +61,8 @@ def main():
 
         imgbytes = cv.imencode('.png', frame)[1].tobytes()  # ditto
         image_elem.update(data=imgbytes)
+        t_1 = perf_counter()
+        print(t_1 - t_0)
 
         if event == 'Pause':
             while event != 'Play':
@@ -80,4 +84,17 @@ def main():
                     image_elem.update(data=imgbytes)
 
 
+
 main()
+
+
+"""
+print(t_1 - t_0) values
+0.03816360700000043
+0.035159134999999786
+0.03400266099999971
+0.03761172499999965
+0.03897140900000018
+0.036519763999999455
+0.040657064000000354
+0.04163844600000033"""
