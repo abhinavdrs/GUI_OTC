@@ -160,7 +160,7 @@ class VideoPlayer(sg.Frame):
     def show_new_frame(self):
         pass
 
-
+#change
 # 800.0 600.0
 # %%
 # Create a window and embed the video player element
