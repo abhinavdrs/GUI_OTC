@@ -72,6 +72,7 @@ class VideoPlayer(sg.Frame):
     def set_height_width(self, width, height):
         self.height = height
         self.width = width
+
         return True
 
     def get_height_width(self):
@@ -160,6 +161,7 @@ class VideoPlayer(sg.Frame):
         pass
 
 
+# 800.0 600.0
 # %%
 # Create a window and embed the video player element
 # Create instance of VideoPlayer class
@@ -185,7 +187,7 @@ vid_layout = MyVideoPlayer.init_layout()
 window_layout = vid_layout
 
 # Create the window
-window = sg.Window(title="My window with embedded video player", layout=window_layout)
+window = sg.Window(title="My window with embedded video player", layout=window_layout, size=(800,600))
 
 # Enter event loop
 while True:
