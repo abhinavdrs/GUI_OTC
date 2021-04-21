@@ -2,7 +2,6 @@ import PySimpleGUI as sg
 import cv2 as cv
 
 
-# %%
 class VideoPlayer(sg.Frame):
     def __init__(
             self,
@@ -40,7 +39,7 @@ class VideoPlayer(sg.Frame):
         self.width = 100
 
         # Store all possible events of Video player in this list
-        self.event_list =["button_play", "button_pause", "slider_vidframe" ]
+        self.event_list = ["button_play", "button_pause", "slider_vidframe"]
 
         # Inherit instantiation from parent class
         super().__init__(
@@ -78,6 +77,7 @@ class VideoPlayer(sg.Frame):
         return int(width), int(height)
 
     def get_graph_layout(self):
+        """Static VideoPlayer layout for initialization"""
         width, height = self.get_height_width()
         print("from init layout", width, height)
         self.graph_vidframe = sg.Graph(
@@ -90,17 +90,6 @@ class VideoPlayer(sg.Frame):
         return self.graph_vidframe
 
     def init_layout(self):
-        """Static VideoPlayer layout for initialization"""
-        # self.set_height_width(200, 200)
-        # width, height = self.get_height_width()
-        # print("from init layout", width, height)
-        # self.graph_vidframe = sg.Graph(
-        #     canvas_size=(width, height),
-        #     graph_bottom_left=(0, 0),
-        #     graph_top_right=(width, height),
-        #     key="graph_vidframe",
-        # )
-
         self.graph_vidframe = self.get_graph_layout()
         self.button_play = sg.B(
             "Play", key="button_play"
@@ -110,7 +99,7 @@ class VideoPlayer(sg.Frame):
         )
         # size was set to (self.width,10) which was the cause of the extreme width of the window.
         # set enable_events = True: Slider move now generates an event.
-        self.slider_vidframe = sg.Slider(range=(0, self.num_frames),enable_events=True,
+        self.slider_vidframe = sg.Slider(range=(0, self.num_frames), enable_events=True,
                                          orientation="h", size=(60, 10), key="slider_vidframe"
                                          )
         self.layout = [
@@ -130,7 +119,7 @@ class VideoPlayer(sg.Frame):
         # Open video capture object
         self.vidFile = cv.VideoCapture(self.filename)
 
-        # Populate video paramaters
+        # Populate video parameters
         self.num_frames = self.vidFile.get(cv.CAP_PROP_FRAME_COUNT)
         self.fps = self.vidFile.get(cv.CAP_PROP_FPS)
         width = self.vidFile.get(cv.CAP_PROP_FRAME_WIDTH)
@@ -154,7 +143,6 @@ class VideoPlayer(sg.Frame):
             :param windows: <class 'PySimpleGUI.PySimpleGUI.Window'>
 
         """
-        # print("Hi from inside video player event loop!")
         if event == "button_play":
             self.play = True
             while self.play:
@@ -164,8 +152,6 @@ class VideoPlayer(sg.Frame):
                 # Extract graph element
                 self.graph = window.Element("graph_vidframe")
 
-
-
                 # Read next frame
                 ret, frame = self.vidFile.read()
 
@@ -174,10 +160,12 @@ class VideoPlayer(sg.Frame):
 
                 # Draw image on graph object
                 figure_id = self.graph.DrawImage(data=imgbytes, location=(0, self.height))
-                deleted_figure_id = self.graph.DeleteFigure(figure_id - 1)
                 # print("DrawImage returned", figure_id)
-                # print("Deleted Figure ID", deleted_figure_id)
-                # Ensures when Pause is pressed the control is returned to main function
+
+                # Delete previously drawn Image > Ensures near real time speed.
+                self.graph.DeleteFigure(figure_id - 1)
+
+                # Recursion: Proved effective to break out when event == "button_pause"
                 self.events(event=event, values=values, window=window, shapes=None, shape_mode=None)
 
 
@@ -190,6 +178,7 @@ class VideoPlayer(sg.Frame):
 
             print("Button from main layout called. Breaking the loop")
 
+        # To do.
         elif event == "slider_vidframe":
             print("slider moved")
         #     self.vidframe_no = values["slider_vidframe"]
@@ -234,19 +223,14 @@ window = sg.Window(title="My window with embedded video player", layout=window_l
 
 while True:
     event, values = window.read(timeout=5)
-    if event == "button_play":
-        print('You pressed Play :  MAIN Loop')
-    if event == "button_pause":
-        print('You pressed pause :  MAIN Loop')
-    if event == "button_external":
-        print("external button pressed from main")
+
     # Window-related events
     if event == sg.WINDOW_CLOSED or event == "Quit":
         break
+
     # VideoPlayer related events
     MyVideoPlayer.events(event=event, values=values, window=window)
-    # print("broke out from event loop")
-# Close window
+
 window.close()
 #
 # Is VideoPlayer is subclass of sg.Frame and MyVideoPlayer is instance of VideoPlayer?
