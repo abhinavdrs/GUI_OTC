@@ -154,6 +154,8 @@ class VideoPlayer(sg.Frame):
 
                 # Read next frame
                 ret, frame = self.vidFile.read()
+                # Read two frames but show one
+                ret, frame = self.vidFile.read()
 
                 # Convert image to bytes
                 imgbytes = cv.imencode('.png', frame)[1].tobytes()
@@ -164,6 +166,8 @@ class VideoPlayer(sg.Frame):
 
                 # Delete previously drawn Image > Ensures near real time speed.
                 self.graph.DeleteFigure(figure_id - 1)
+                #second frame to speed
+
 
                 # Recursion: Proved effective to break out when event == "button_pause"
                 self.events(event=event, values=values, window=window, shapes=None, shape_mode=None)
